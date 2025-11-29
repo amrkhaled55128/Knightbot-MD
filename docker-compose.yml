@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  knightbot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: knightbot-md
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - TZ=Africa/Cairo
+      # أضف متغيرات البيئة الخاصة بك هنا
+      # - SESSION_ID=${SESSION_ID}
+    volumes:
+      # حفظ بيانات الجلسة
+      - ./session:/app/session
+      - ./data:/app/data
+    ports:
+      - "3000:3000"
+    # إعادة التشغيل التلقائي في حالة الفشل
+    healthcheck:
+      test: ["CMD", "node", "-e", "console.log('OK')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
