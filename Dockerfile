@@ -1,5 +1,7 @@
-FROM node:20
+# syntax=docker/dockerfile:1
+FROM node:20-bookworm-slim
 
+# Install system deps (ffmpeg and build tools for native modules)
 RUN apt-get update && apt-get install -y \
     ffmpeg \
     wget \
@@ -11,10 +13,15 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
+# Install JS deps first (respect lockfile)
 COPY package*.json ./
+RUN npm ci --legacy-peer-deps
 
-RUN npm install --legacy-peer-deps
-
+# Copy source
 COPY . .
 
+ENV NODE_ENV=production
+
 CMD ["npm", "start"]
+
+
